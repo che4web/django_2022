@@ -15,10 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from biblioapp.views import current_datetime,index
+from biblioapp.views import current_datetime,index,article_list,article_detail
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('',index),
+    path('',index,name="article_table"),
+    path('article/<int:pk>/',article_detail,name="article_detail"),
+    path('list/',article_list,name="article_list"),
     path('time',current_datetime),
     path('admin/', admin.site.urls),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

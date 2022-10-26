@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content%}
+<h1> {{article.id}}. {{article.name}}</h1>
+<h2>{{article.get_all_author_name}}</h2>
+<h3>{{article.journal.name}} {{article.date.year}}</h3>
+            {%if article.img%}
+            <img src="{{article.img.url}}" class="article__img" alt="...">
+            {%endif%}
+<div>
+    <b>Описание </b></div>
+<div>
+    {{article.desctiption}}
+</div>
+<h2>  Ссылкт</h2>
+<ol>
+    <hr>
+        {% for a in article.referens.all%}
+    <li> {{a.name}} </li>
+    {%endfor%}
+    </ol>
+<style>
+.article__img{
+    max-height:200px
+}
+</style>
+
+{%endblock%}

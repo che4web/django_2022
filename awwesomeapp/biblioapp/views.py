@@ -26,6 +26,28 @@ def index(request):
     }
     return render(request,'index.html',context )
 
+def article_list(request):
+    search = request.GET.get('search','')
+    article_list = Article.objects.all()
+    if search:
+        article_list =article_list.filter(name__icontains=search)
+
+    context = {
+        'article_list':article_list
+    }
+    return render(request,'article_list.html',context )
+
+def article_detail(request,pk):
+    article= Article.objects.get(id=pk)
+    context = {
+        'article':article
+    }
+    return render(request,'article_detail.html',context )
+
+
+
+
+
 def current_datetime(request):
     article_list = Article.objects.all()
     context = {

@@ -3,14 +3,40 @@
 <h1 > hellp</h1>
 <form>
     <input name="search" class="form-control" placeholder="Поиск по названию" value="{{request.GET.search}}">
-<button class="btn btn-primary"> поиск</button>
+    <button class="btn btn-primary"> поиск</button>
 </form>
-    <ol>
+<a href="{% url 'article_list' %}"><button class="btn btn-info">карточки</button> </a>
+<table class="table table-hover ">
+    <thead>
+        <tr>
+            <th> id </th>
+            <th> Авторы</th>
+            <th> Название </th>
+            <th> Журнал</th>
+            <th> Год публикации</th>
+            <th> doi </th>
+        </tr>
+    </thead>
+    <tbody>
         {% for art in article_list%}
 
-        <li> {{art.get_foo}}</li>
+        <tr> 
+            <td>{{art.id}}</td>
+            <td>
+                {{art.get_all_author_name}}
+            </td>
+            <td> {{ art.normal_name }}</td>
+            <td>{{art.journal.name}}</td>
+            <td>{{art.date.year}}</td>
+            <td> 
+                <a href="https://doi.org/{{art.doi}}" target="_blank">{{art.doi}} </a>
+            </td>
+
+        </tr>
         {%endfor%}
-    <ol>
+
+    </tbody>
+    <table>
 {%endblock%}
 {%block fotter%}
 {%endblock%}
