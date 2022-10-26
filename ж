@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content%}
+<h1 > hellp</h1>
+<form>
+<input name="search">
+<button class=""> поиск</button>
+</form>
+    <ol>
+        {% for art in article_list%}
+
+        <li> {{art.get_foo}}</li>
+        {%endfor%}
+    <ol>
+{%endblock%}
+{%block fotter%}
+bar
+{%endblock%}
