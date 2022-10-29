@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content%}
+<h1 >Эта форма стать</h1>
+<form method="POST">
+{{form.as_p}}
+{% csrf_token %}
+<button class="btn btn-primary"> сохранить</button>
+</form>
+<style>
+.errorlist{
+    background:red
+}
+</style>
+{%endblock%}

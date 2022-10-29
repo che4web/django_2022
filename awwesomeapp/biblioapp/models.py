@@ -28,14 +28,19 @@ class Journal(models.Model):
 
     def get_articel_count(self):
         return self.article_set.all().count()
+    def __str__(self):
+        return self.name
 
 class Article(models.Model):
-    name = models.CharField(max_length=255)
-    img = models.ImageField(blank=True,null=True)
-    author = models.ManyToManyField(Author)
-    desctiption = models.TextField(blank=True)
-    date = models.DateField(blank=True,null=True)
-    journal = models.ForeignKey(Journal,on_delete=models.PROTECT,null=True,blank=True)
+    name = models.CharField(max_length=255,verbose_name='Заголовок стати')
+    img = models.ImageField(blank=True,null=True,verbose_name='Картинка')
+    author = models.ManyToManyField(Author,verbose_name="Авторы")
+    desctiption = models.TextField(blank=True,verbose_name="Описание")
+    date = models.DateField(blank=True,null=True,verbose_name="дата публикации")
+    journal = models.ForeignKey(Journal,
+                                on_delete=models.PROTECT,
+                                null=True,blank=True,
+                                verbose_name="Журнал")
     TYPE_CHOICES = (
         ('AR','Статья  в журнале'),
         ('BK','Книга'),
@@ -46,7 +51,9 @@ class Article(models.Model):
                            verbose_name="Тип публикации"
                            )
     doi = models.CharField(max_length=255,blank=True,null=True)
-    referens = models.ManyToManyField('Article')
+    referens = models.ManyToManyField('Article',verbose_name="Ссылки")
+    def __str__(self):
+        return self.get_all_author_name() +self.name
     def save(self,*args,**kwargs):
     #    self.name = self.name.lower()
         return super().save(*args,**kwargs)
@@ -62,3 +69,7 @@ class Article(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('article_detail', kwargs={'pk' : self.pk})
+
+    def get_edit_url(self):
+        from django.urls import reverse
+        return reverse('article-update', kwargs={'pk' : self.pk})

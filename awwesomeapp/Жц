@@ -2,12 +2,38 @@
 {% block content%}
 <h1 > hellp</h1>
 <form>
-    {{form.as_table}}
+    <div  class="row g-3">
+        <div class="col-2">
+            <label for="search" >По имени автора</label>
+        </div>
+        <div class="col-8">
+            <input type="text"  class="form-control" name="author_name" value="{{request.GET.author_name}}">
+        </div>
 
+    </div>
+    <div  class="row g-3">
+        <div class="col-2">
+            <label for="search" >Автор</label>
+        </div>
+        <div class="col-8">
+            <input type="text"  class="form-control" name="author_name" value="{{request.GET.author_name}}">
+        </div>
+
+    </div>
+
+    <div  class="row g-3">
+        <div class="col-2">
+            <label for="search" >Поиск по названию</label>
+        </div>
+        <div class="col-8">
+            <input type="text"  class="form-control" name="search" value="{{request.GET.search}}">
+        </div>
+        <div class="col-2">
             <button type="submit" class="btn btn-primary mb-3">поиск</button>
+        </div>
+    </div>
 </form>
 
-<a href="{% url 'article-create' %}" class="btn btn-primary mb-3">Создать статью</a>
 <div class="row row-cols-1 row-cols-lg-3 row-cols-xl-4 row-cols-md-2 g-4">
     {% for art in article_list%}  
     <div class="col">
