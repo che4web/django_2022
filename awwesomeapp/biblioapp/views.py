@@ -4,8 +4,10 @@ from django.http import HttpResponse,HttpResponseRedirect
 from biblioapp.models import Article,Author
 from biblioapp.forms import SearchForm,ArticleForm
 
-from django.views.generic import DetailView
+from django.views.generic import DetailView,ListView
 from django.views.generic.edit import CreateView
+from biblioapp.forms import ArticleForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 
@@ -47,7 +49,39 @@ def article_list(request):
     }
     return render(request,'article_list.html',context )
 
-class ArticleDetail(DetailView):
+
+class SearchFormMixin:
+    filter_form = None
+    fileter_form_class = None
+
+    def get_filter_form(self):
+        if self.filter_form is None:
+            self.filter_form= self.fileter_form_class(self.request.GET)
+        return self.filter_form
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        form = self.get_filter_form()
+        if form.is_valid():
+            for key,val in form.cleaned_data.items():
+                if val:
+                    queryset = queryset.filter(**{key:val})
+        return queryset
+
+    def get_context_data(self,*args,**kwargs):
+        context = super().get_context_data(*args,**kwargs)
+        context['form']=self.get_filter_form()
+        return context
+
+
+
+
+
+
+class ArticleList(SearchFormMixin,ListView):
+    model =Article
+    fileter_form_class = SearchForm
+
+class ArticleDetail(LoginRequiredMixin,DetailView):
     model = Article
 
 def article_detail(request,pk):
@@ -57,7 +91,8 @@ def article_detail(request,pk):
 
 class ArticleCreate(CreateView):
     model = Article
-    fields = '__all__'
+    form_class = ArticleForm
+    #fields = '__all__'
 
 def article_create(request):
     if request.method =="GET":
@@ -95,18 +130,6 @@ def article_update(request,pk):
                 'form':form
             }
             return render(request,'article_form.html',context )
-
-
-
-
-
-
-
-
-
-
-
-
 
 def current_datetime(request):
     article_list = Article.objects.all()
