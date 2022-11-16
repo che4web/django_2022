@@ -1,31 +1,42 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title> django awesome</title>
-    </head>
-    <body>
-        <h1>hello</h1>
-        
-        <h1>hello 2</h1>
-        <hr>
-        <h3>hello 2</h3>
-        <pre> adsf as fas df asd fasd f
-        s
-        ad f
-        a sdfas
-        d f
-        asdf
-         a
-        sd f
-        as d
-        feee                         sadf asdf asdf asd asd 
+{% extends "base.html" %}
+{% block content%}
+<h1 > hellp</h1>
+<form>
+    <input name="search" class="form-control" placeholder="Поиск по названию" value="{{request.GET.search}}">
+    <button class="btn btn-primary"> поиск</button>
+</form>
+<button class="btn btn-info">  карточками</button>
+<table class="table table-hover ">
+    <thead>
+        <tr>
+            <th> id </th>
+            <th> Авторы</th>
+            <th> Название </th>
+            <th> Журнал</th>
+            <th> Год публикации</th>
+            <th> doi </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for art in article_list%}
 
-        </pre>
-        <strong> strong</strong>
-        <b>strong</b>
-        <a href="http://ya.ru" target = " _blank "> яндекс </a>
-        <img src="https://pic.rutubelist.ru/video/eb/f8/ebf8d86ddd388ef643c195927b2be660.jpg">
+        <tr> 
+            <td>{{art.id}}</td>
+            <td>
+                {{art.get_all_author_name}}
+            </td>
+            <td> {{ art.normal_name }}</td>
+            <td>{{art.journal.name}}</td>
+            <td>{{art.date.year}}</td>
+            <td> 
+                <a href="https://doi.org/{{art.doi}}" target="_blank">{{art.doi}} </a>
+            </td>
 
-    </body>
+        </tr>
+        {%endfor%}
 
-</html>
+    </tbody>
+    <table>
+{%endblock%}
+{%block fotter%}
+{%endblock%}

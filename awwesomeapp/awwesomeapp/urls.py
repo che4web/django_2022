@@ -30,6 +30,7 @@ from biblioapp.views import (
 
 from django.conf import settings
 from django.conf.urls.static import static
+from pageapp.views import PageList,PageDetail,CategoryList,CategoryDetail
 
 urlpatterns = [
     path('',index,name="article_table"),
@@ -39,6 +40,12 @@ urlpatterns = [
     path('article/<int:pk>/update',article_update,name="article-update"),
     #path('article/create/',article_create,name="article-create"),
     path('article/create/',ArticleCreate.as_view(),name="article-create"),
+    path('page/',PageList.as_view(),name="page-list"),
+  #  path('page/<int:pk>/',PageDetail.as_view(),name="page-detail"),
+    path('category/<slug:category>/<slug:slug>/',PageDetail.as_view(),name="page-detail"),
+    path('category/<slug:slug>/',PageDetail.as_view(),name="page-detail-slug"),
+    path('category/',CategoryList.as_view(),name="category-list"),
+    path('category/<int:pk>/',CategoryDetail.as_view(),name="category-detail"),
     path('time',current_datetime),
     path('admin/', admin.site.urls),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content%}
+<h1 > Сипос Категорий</h1>
+{% for category in object_list%}
+<div> {{category.name}}
+    <ol>
+        {% for page in category.page_set.all%}
+        <li> <a href="{{page.get_absolute_url}}"> {{page.name}}</a> </li>
+    </ol>
+    {%endfor%}
+</div>
+{%endfor%}
+{% endblock  %}

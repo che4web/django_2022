@@ -7,7 +7,8 @@ from biblioapp.forms import SearchForm,ArticleForm
 from django.views.generic import DetailView,ListView
 from django.views.generic.edit import CreateView
 from biblioapp.forms import ArticleForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -77,11 +78,25 @@ class SearchFormMixin:
 
 
 
-class ArticleList(SearchFormMixin,ListView):
+class ArticleList(PermissionRequiredMixin,SearchFormMixin,ListView):
     model =Article
     fileter_form_class = SearchForm
+    permission_required = ('biblioapp.view_article',)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        if not user.has_perm('biblioapp.view_all_article'):
+            queryset = queryset.filter(author__user=self.request.user)
+        return queryset
+    def get_context_data(self,*args,**kwargs):
+        from pageapp.models import Page
+        context =  super().get_context_data(*args,**kwargs)
+        context['page_list'] = Page.objects.all()
 
-class ArticleDetail(LoginRequiredMixin,DetailView):
+        return context
+
+class ArticleDetail(PermissionRequiredMixin,DetailView):
+    permission_required = ('biblioapp.view_article',)
     model = Article
 
 def article_detail(request,pk):
@@ -89,7 +104,10 @@ def article_detail(request,pk):
     context = { 'article':article }
     return render(request,'article_detail.html',context )
 
-class ArticleCreate(CreateView):
+class LoginPerim(LoginRequiredMixin,CreateView):
+    pass
+
+class ArticleCreate(LoginPerim):
     model = Article
     form_class = ArticleForm
     #fields = '__all__'
@@ -111,7 +129,7 @@ def article_create(request):
                 'form':form
             }
             return render(request,'article_form.html',context )
-
+@login_required
 def article_update(request,pk):
     if request.method =="GET":
         articel = Article.objects.get(id=pk)

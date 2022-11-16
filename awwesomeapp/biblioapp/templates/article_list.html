@@ -20,7 +20,7 @@
                 <h6 class="card-subtitle mb-2 text-muted">{{art.journal.name}} {{art.date.year}}</h6>
                 <p class="card-text">{{art.desctiption| truncatechars:100}}</p>
                 <a href="https://doi.org/{{art.doi}}" target="_blank" class="btn btn-info">Go</a>
-                <a href="{{art.get_absolute_url}}"  class="btn btn-primary">читать</a>
+                <a href="{{art.get_absolute_url}}"  class="btn btn-primary my-class">читать</a>
             </div>
 
             <div class="card-footer">
@@ -28,6 +28,10 @@
             </div>
         </div>
     </div>
+
+    {%endfor%}
+    {% for page in page_list %}
+    {{page}}
 
     {%endfor%}
 </div>

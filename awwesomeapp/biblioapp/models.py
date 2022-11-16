@@ -1,10 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
 
 class Author(models.Model):
     name = models.CharField(max_length=255)
+    user = models.OneToOneField(User,blank=True,null=True,on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
@@ -73,3 +75,8 @@ class Article(models.Model):
     def get_edit_url(self):
         from django.urls import reverse
         return reverse('article-update', kwargs={'pk' : self.pk})
+
+    class Meta:
+        permissions= (
+            ('view_all_article',"Может смотреть все статиь"),
+        )
