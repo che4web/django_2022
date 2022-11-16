@@ -1,6 +1,6 @@
 from django.shortcuts import render
 import datetime
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
 from biblioapp.models import Article,Author
 from biblioapp.forms import SearchForm,ArticleForm
 
@@ -23,17 +23,9 @@ def current_datetime0(request):
     html +='</ol>'
     return HttpResponse ( html )
 def index(request):
-    search = request.GET.get('search','')
-    article_list = Article.objects.all()
-    if search:
-        article_list =article_list.filter(name__icontains=search)
+    return render(request,'index.html',{} )
 
-    context = {
-        'article_list':article_list
-    }
-    return render(request,'index.html',context )
-
-def article_list(request):
+def article_list_json(request):
     form = SearchForm(request.GET)
     article_list = Article.objects.all()
     if form.is_valid():
@@ -41,14 +33,16 @@ def article_list(request):
             if val:
                 article_list = article_list.filter(**{key:val})
 
-
-    context = {
-        'article_list':article_list,
-        'author_list': Author.objects.all(),
-        'errors':form.errors,
-        'form':form
-    }
-    return render(request,'article_list.html',context )
+    res = []
+    for article in  article_list:
+        res.append({
+            'id':article.id,
+            'name':article.name,
+            'journal_name':article.journal.name if article.journal else '',
+            'date_year':article.date.year if article.date else '',
+            'get_all_author_name':article.get_all_author_name(),
+        })
+    return JsonResponse(res,safe=False)
 
 
 class SearchFormMixin:

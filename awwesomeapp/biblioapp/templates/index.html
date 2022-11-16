@@ -2,9 +2,9 @@
 {% block content%}
 <h1 > hellp</h1>
 <form>
-    <input name="search" class="form-control" placeholder="Поиск по названию" value="{{request.GET.search}}">
-    <button class="btn btn-primary"> поиск</button>
+    <input id="search" name="search" class="form-control" placeholder="Поиск по названию" value="{{request.GET.search}}"  >
 </form>
+    <button class="btn btn-primary" onclick="getData()"> поиск</button>
 <table class="table table-hover ">
     <thead>
         <tr>
@@ -16,24 +16,42 @@
             <th> doi </th>
         </tr>
     </thead>
-    <tbody>
-        {% for art in article_list%}
-
-        <tr> 
-            <td>{{art.id}}</td>
-            <td>
-                {{art.get_all_author_name}}
-            </td>
-            <td> {{ art.normal_name }}</td>
-            <td>{{art.journal.name}}</td>
-            <td>{{art.date.year}}</td>
+        <tbody id="target_div"></tbody>
+    </table>
+<script>
+    function renderRow(art){
+        return ` <tr> 
+            <td> ${art.id} </td>
+            <td> ${art.get_all_author_name} </td>
+            <td> ${art.name} </td>
+            <td> ${art.journal_name} </td>
+            <td> ${art.date_year} </td>
             <td> 
-                <a href="https://doi.org/{{art.doi}}" target="_blank">{{art.doi}} </a>
+                <a href="https://doi.org/${art.doi}" target="_blank">${art.doi} </a>
             </td>
 
         </tr>
-        {%endfor%}
+            `
+        
+    }
+    async function getData(){
+            let input_element = document.getElementById('search')
+            let search = input_element.value
+            let response = await fetch('/article/json?author__name__icontains='+search)
+            let data = await response.json()
+            let el = document.getElementById("target_div")
+            let tmp = ''
+            for (let x of data){
+                tmp += renderRow(x)
+            }
+            el.innerHTML = tmp
+            console.log("async funtin")
+            console.log(data)
 
-    </tbody>
-    <table>
+        return false
+        }
+
+    let input_element = document.getElementById('search')
+    input_element.oninput=getData
+</script>
 {%endblock%}

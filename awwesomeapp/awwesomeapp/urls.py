@@ -18,7 +18,7 @@ from django.urls import path
 from biblioapp.views import (
     current_datetime,
     index,
-    article_list,
+    article_list_json,
     article_detail,
     article_create,
     article_update,
@@ -36,6 +36,7 @@ urlpatterns = [
     path('',index,name="article_table"),
     #path('article/<int:pk>/',article_detail,name="article_detail"),
     path('article/',ArticleList.as_view(),name="article-list"),
+    path('article/json',article_list_json,name="article-list-json"),
     path('article/<int:pk>/',ArticleDetail.as_view(),name="article_detail"),
     path('article/<int:pk>/update',article_update,name="article-update"),
     #path('article/create/',article_create,name="article-create"),
