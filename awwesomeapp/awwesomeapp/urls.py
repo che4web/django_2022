@@ -25,17 +25,27 @@ from biblioapp.views import (
     ArticleDetail,
     ArticleCreate,
     ArticleList,
+    ArticleViewSet,
+    JournalDetail,
 )
 
 
 from django.conf import settings
 from django.conf.urls.static import static
 from pageapp.views import PageList,PageDetail,CategoryList,CategoryDetail
+from django.urls import path, include
+from rest_framework import routers
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r'article', ArticleViewSet)
 
 urlpatterns = [
+    path('api/', include(router.urls)),
     path('',index,name="article_table"),
     #path('article/<int:pk>/',article_detail,name="article_detail"),
-    path('article/',ArticleList.as_view(),name="article-list"),
+    path('journal/<int:pk>/',JournalDetail.as_view(),name="journal-detail"),
+    path('article/',ArticleList.as_view(),name="article-list2"),
     path('article/json',article_list_json,name="article-list-json"),
     path('article/<int:pk>/',ArticleDetail.as_view(),name="article_detail"),
     path('article/<int:pk>/update',article_update,name="article-update"),
@@ -48,5 +58,6 @@ urlpatterns = [
     path('category/',CategoryList.as_view(),name="category-list"),
     path('category/<int:pk>/',CategoryDetail.as_view(),name="category-detail"),
     path('time',current_datetime),
+    path('api-auth/', include('rest_framework.urls')),
     path('admin/', admin.site.urls),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

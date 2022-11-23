@@ -10,3 +10,27 @@
 .btn-primary.my-class{
 background-color:red
 }
+.container-che{
+  max-width: 100px;
+  margin: 0px auto;
+}
+@media (min-width:500px){
+.container-che{
+  max-width: 480px;
+  }
+    
+}
+@media (min-width:1000px){
+.container-che{
+  max-width: 900px;
+  }
+    
+}
+
+@media (min-width:1400px){
+.container-che{
+  max-width: 1300px;
+  }
+    
+}
+

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import datetime
 from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
-from biblioapp.models import Article,Author
+from biblioapp.models import Article,Author,Journal
 from biblioapp.forms import SearchForm,ArticleForm
 
 from django.views.generic import DetailView,ListView
@@ -9,7 +9,8 @@ from django.views.generic.edit import CreateView
 from biblioapp.forms import ArticleForm
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
-
+from rest_framework import routers, serializers, viewsets
+from django_filters import FilterSet,CharFilter
 
 
 # Create your views here.
@@ -92,6 +93,12 @@ class ArticleList(PermissionRequiredMixin,SearchFormMixin,ListView):
 class ArticleDetail(PermissionRequiredMixin,DetailView):
     permission_required = ('biblioapp.view_article',)
     model = Article
+    def get_context_data(self,*args,**kwargs):
+        print(self.kwargs['pk'])
+        context =  super().get_context_data(*args,**kwargs)
+        return context
+
+
 
 def article_detail(request,pk):
     article= Article.objects.get(id=pk)
@@ -150,3 +157,33 @@ def current_datetime(request):
         'article_list':article_list
     }
     return render(request,'index.html',context )
+
+class JournalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Journal
+        fields = ['id', 'name', ]
+
+
+class ArticleSerializer(serializers.ModelSerializer):
+    journal =JournalSerializer()
+    class Meta:
+        model = Article
+        fields = ['id', 'name', 'date' ,'journal']
+
+# ViewSets define the view behavior.
+
+class ArticleSetFilter(FilterSet):
+    author__name__icontains = CharFilter(field_name="author",lookup_expr="name__icontains")
+    class Meta:
+        model = Article
+        fields= '__all__'
+        exclude = ['img']
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    model = Article
+    serializer_class = ArticleSerializer
+    filterset_class  = ArticleSetFilter
+
+class JournalDetail(DetailView):
+    model = Journal

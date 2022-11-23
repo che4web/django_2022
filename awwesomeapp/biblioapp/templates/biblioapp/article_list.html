@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block content%}
+<script>
+    function alertClick(event){
+        alert(0);
+        event.stopPropagation()
+        event.preventDefault()
+        return false
+
+    }
+    function foo(one,two,three){
+        console.log(one,two,three)
+
+    }
+</script>
 <h1 > hellp</h1>
 <form>
     {{form.as_table}}
@@ -11,16 +24,16 @@
 <div class="row row-cols-1 row-cols-lg-3 row-cols-xl-4 row-cols-md-2 g-4">
     {% for art in article_list%}  
     <div class="col">
-        <div class="card h-100"  >
+        <div class="card h-100"   onclick="alert(3)" >
             {%if art.img%}
             <img src="{{art.img.url}}" class="card-img-top" alt="...">
             {%endif%}
-            <div class="card-body">
+            <div class="card-body" onclick="alert(2)">
                 <h5 class="card-title">{{art.name|capfirst}}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">{{art.journal.name}} {{art.date.year}}</h6>
-                <p class="card-text">{{art.desctiption| truncatechars:100}}</p>
+                <p class="card-text" onclick="alert(1)">{{art.desctiption| truncatechars:100}}</p>
                 <a href="https://doi.org/{{art.doi}}" target="_blank" class="btn btn-info">Go</a>
-                <a href="{{art.get_absolute_url}}"  class="btn btn-primary ">читать</a>
+                <a href="{{art.get_absolute_url}}"  class="btn btn-primary " onclick="alertClick(event)">читать</a>
             </div>
 
             <div class="card-footer">
