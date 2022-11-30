@@ -15,7 +15,7 @@ from django_filters import FilterSet,CharFilter
 from biblioapp.serializers import AuthorSerializer,JournalSerializer,ArticleSerializer
 from rest_framework import filters
 from  django_filters.rest_framework import DjangoFilterBackend
-
+from django.db.models import Count
 # Create your views here.
 def current_datetime0(request):
     now = datetime.datetime.now ()
@@ -175,6 +175,21 @@ class ArticleSetFilter(FilterSet):
         model = Article
         fields= '__all__'
         exclude = ['img']
+from rest_framework import pagination
+from rest_framework.response import  Response
+
+class CustomPagination(pagination.PageNumberPagination):
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data
+        })
+
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
@@ -183,6 +198,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     filterset_class  = ArticleSetFilter
     filter_backends = [filters.OrderingFilter,DjangoFilterBackend]
     ordering_fields = '__all__'
+    pagination_class = CustomPagination
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
@@ -229,6 +245,11 @@ class JournalViewSet(viewsets.ModelViewSet):
     model = Journal
     serializer_class = JournalSerializer
     filterset_class  = JournalSetFilter
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.annotate(Count('article__id'))
+        return queryset
 
 
 

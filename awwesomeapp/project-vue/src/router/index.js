@@ -18,13 +18,25 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/ArticleTable.vue')
   },
   {
-      path: '/article/my',
+      path: '/article/:id',
+    name: 'article-detail',
+    component: () => import(/* webpackChunkName: "about" */ '../views/ArticleDetail.vue')
+  },
+
+  {
+      path: '/journal/:id',
+    name: 'journal-detail',
+    component: () => import(/* webpackChunkName: "about" */ '../views/JournalDetail.vue')
+  },
+
+  {
+      path: '/article-my',
     name: 'article-my',
     component: () => import(/* webpackChunkName: "about" */ '../views/ArticleMy.vue')
   },
 
   {
-      path: '/article/form',
+      path: '/article-form',
     name: 'article-form',
     component: () => import(/* webpackChunkName: "about" */ '../views/ArticleForm.vue')
   },

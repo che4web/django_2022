@@ -22,7 +22,7 @@ export default{
         async getJournal(search){
             let   params={name__icontains:search}
             let data =  (await axios.get('/api/journal/',{params})).data
-            this.authorList = data
+            this.authorList = data.results
         },
 
 

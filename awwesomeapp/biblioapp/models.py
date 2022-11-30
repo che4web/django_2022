@@ -56,7 +56,7 @@ class Article(models.Model):
                            verbose_name="Тип публикации"
                            )
     doi = models.CharField(max_length=255,blank=True,null=True)
-    referens = models.ManyToManyField('Article',verbose_name="Ссылки")
+    referens = models.ManyToManyField('Article',verbose_name="Ссылки",blank=True)
     def __str__(self):
         return self.get_all_author_name() +self.name
     def save(self,*args,**kwargs):

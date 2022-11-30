@@ -1,0 +1,16 @@
+<template>
+    <div>
+        Описание статьи
+        <h2>{{article.name}} {{article.id}}</h2>
+    </div>
+</template>
+<script>
+export default {
+    name:"article-detail",
+    data(){
+        return {
+            article:{}
+        }
+    }
+}
+</script>

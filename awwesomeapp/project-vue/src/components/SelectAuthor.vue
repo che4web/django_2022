@@ -4,7 +4,7 @@
 </template>
 <script>
 import vSelect from "vue-select"
-import axios from 'axios'
+import {Author} from "@/api"
 export default{
     name:"select-author",
     props:['modelValue'],
@@ -20,8 +20,8 @@ export default{
     methods:{
         async getAuhtor(search){
             let   params={name__icontains:search}
-            let data =  (await axios.get('/api/author/',{params})).data
-            this.authorList = data
+            let data = await Author.objects.filter(params)
+            this.authorList = data.results
         },
 
 

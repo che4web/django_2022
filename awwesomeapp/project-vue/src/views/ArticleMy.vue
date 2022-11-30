@@ -9,8 +9,8 @@
     <thead>
         <tr>
             <th> id </th>
-            <th> Авторы</th>
             <th> Название </th>
+            <th> Авторы</th>
             <th> Журнал</th>
             <th> Год публикации</th>
             <th> doi </th>
@@ -34,7 +34,7 @@
 
 </template>
 <script>
-import axios from 'axios'
+import {Article,Author} from "@/api.js"
 export default{
     name:'article-table',
    data(){
@@ -63,13 +63,13 @@ export default{
             this.selectAuthor=event
         },
         async getArticle(){
-            let author  =  (await axios.get('/api/author/who_iam/')).data
+            let author  = await  Author.objects.who_iam()
             let   params={
                 author__name__icontains:this.searchFiedl,
                 author:author.id
             }
             //let data =  (await axios.get('/api/article/my_article/',{params})).data
-            let data =  (await axios.get('/api/article/',{params})).data
+            let data =  await Article.objects.filter(params)
             this.articleList = data
         }
     },

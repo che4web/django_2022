@@ -37,28 +37,38 @@
         </tr>
     </thead>
         <tbody >
-            <tr v-for="art in articleList" :key="art.id">
+            <tr v-for="(art,idx) in articleList" :key="art.id" @click="toDetail(art)">
                 <td>{{art.id}}</td>
                 <td>
                     <div v-for="author in art.author" :key="author.id">{{author.name}}</div>
 
                 </td>
                 <td> {{art.name}}</td>
-                <td>{{art.journal? art.journal.name:''}}</td>
+                <td @click.stop="toJournal(art.journal)">{{art.journal? art.journal.name:''}}</td>
                 <td>{{art.year}}</td>
                 <td>{{art.doi}}</td>
+                <td> <button @click="deleteArticel(art,idx)">удалить  </button></td>
                 </tr>
         </tbody>
     </table>
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+    <li class="page-item" :class="activePage==x? 'active':''" v-for="x in maxPage" :key="x" @click="selectPage(x)"><a class="page-link" href="#">{{x}}</a></li>
+    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+  </ul>
+</nav>
         </div>
+
     </div>
     </div>
 
 </template>
 <script>
-import axios from 'axios'
+//import axios from 'axios'
 import SelectAuthor from "@/components/SelectAuthor"
 import JournalSelect  from "@/components/JournalSelect"
+import {Article} from "@/api.js"
 export default{
     name:'article-table',
    data(){
@@ -66,6 +76,8 @@ export default{
             filters:{},
             searchFiedl:'',
             selectAuthor:{},
+            maxPage:1,
+            activePage:1,
             articleList:[
             ]
         }
@@ -89,6 +101,20 @@ export default{
         this.getArticle()
     },
     methods:{
+        selectPage(p){
+            this.activePage=p
+            this.getArticle()
+        },
+        toJournal(journal){
+            this.$router.push({name:'journal-detail',params:{id:journal.id}})
+        },
+        toDetail(art){
+            this.$router.push({name:'article-detail',params:{id:art.id}})
+        },
+        async deleteArticel(art,idx){
+            await Article.objects.delete(art)
+            this.articleList.splice(idx,1)
+        },
         setOrdering(filed_name){
             this.filters.ordering = this.filters.ordering==filed_name? '-'+filed_name: filed_name
         },
@@ -100,11 +126,13 @@ export default{
             //    author__name__icontains:this.searchFiedl,
             //    author:this.selectAuthor.id
            // }
-            let params = {...this.filters}
+            let params = {...this.filters,page:this.activePage}
             params['journal'] = this.filters.journal? this.filters.journal.id:undefined
             params['author'] = this.filters.author? this.filters.author.id:undefined
-            let data =  (await axios.get('/api/article/',{params})).data
-            this.articleList = data
+            let response = await Article.objects.filter(params)
+            this.maxPage = response.total_pages
+            //let data =  (await axios.get('/api/article/',{params})).data
+            this.articleList = response.results
         }
     },
 
