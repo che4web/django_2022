@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'biblioapp',
     'pageapp',
     'rest_framework',
+    'django_extensions',
     'django_filters',
 ]
 

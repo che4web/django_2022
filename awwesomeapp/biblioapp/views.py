@@ -6,12 +6,15 @@ from biblioapp.forms import SearchForm,ArticleForm
 
 from django.views.generic import DetailView,ListView
 from django.views.generic.edit import CreateView
+from rest_framework.decorators import action
 from biblioapp.forms import ArticleForm
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from rest_framework import routers, serializers, viewsets
 from django_filters import FilterSet,CharFilter
-
+from biblioapp.serializers import AuthorSerializer,JournalSerializer,ArticleSerializer
+from rest_framework import filters
+from  django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
 def current_datetime0(request):
@@ -23,6 +26,7 @@ def current_datetime0(request):
         html += "<li>{}. {} </li>".format(article.id, article.name)
     html +='</ol>'
     return HttpResponse ( html )
+@login_required
 def index(request):
     return render(request,'index.html',{} )
 
@@ -98,6 +102,11 @@ class ArticleDetail(PermissionRequiredMixin,DetailView):
         context =  super().get_context_data(*args,**kwargs)
         return context
 
+def article_by_author(request,pk):
+    article= Article.objects.filter(author__id=pk)
+    context = { 'article_list':article }
+    return render(request,'biblioapp/article_list.html',context )
+
 
 
 def article_detail(request,pk):
@@ -157,23 +166,11 @@ def current_datetime(request):
         'article_list':article_list
     }
     return render(request,'index.html',context )
-
-class JournalSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Journal
-        fields = ['id', 'name', ]
-
-
-class ArticleSerializer(serializers.ModelSerializer):
-    journal =JournalSerializer()
-    class Meta:
-        model = Article
-        fields = ['id', 'name', 'date' ,'journal']
-
 # ViewSets define the view behavior.
 
 class ArticleSetFilter(FilterSet):
     author__name__icontains = CharFilter(field_name="author",lookup_expr="name__icontains")
+    name__icontains = CharFilter(field_name="name",lookup_expr="icontains")
     class Meta:
         model = Article
         fields= '__all__'
@@ -184,6 +181,60 @@ class ArticleViewSet(viewsets.ModelViewSet):
     model = Article
     serializer_class = ArticleSerializer
     filterset_class  = ArticleSetFilter
+    filter_backends = [filters.OrderingFilter,DjangoFilterBackend]
+    ordering_fields = '__all__'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        if not user.has_perm('biblioapp.view_all_article'):
+            queryset = queryset.filter(author__user=self.request.user)
+        return queryset
+
+    @action(detail=False,methods=['GET'])
+    def my_article(self,request):
+        queryset = self.get_queryset()
+        queryset =queryset.filter(author__user=self.request.user)
+        data = self.serializer_class(queryset,many=True).data
+        return JsonResponse(data,safe=False)
+
+
+
+class AuthorSetFilter(FilterSet):
+    name__icontains = CharFilter(field_name="name",lookup_expr="icontains")
+    class Meta:
+        model = Author
+        fields= '__all__'
+
+class AuthorViewSet(viewsets.ModelViewSet):
+    queryset = Author.objects.all()
+    model = Author
+    serializer_class = AuthorSerializer
+    filterset_class  = AuthorSetFilter
+
+    @action(detail=False,methods=['GET'])
+    def who_iam(self,request):
+        author =self.request.user.author
+        data = self.serializer_class(author).data
+        return JsonResponse(data)
+
+
+class JournalSetFilter(FilterSet):
+    name__icontains = CharFilter(field_name="name",lookup_expr="icontains")
+    class Meta:
+        model = Journal
+        fields= '__all__'
+
+class JournalViewSet(viewsets.ModelViewSet):
+    queryset = Journal.objects.all()
+    model = Journal
+    serializer_class = JournalSerializer
+    filterset_class  = JournalSetFilter
+
+
+
+
+
+
 
 class JournalDetail(DetailView):
     model = Journal

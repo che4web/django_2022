@@ -47,6 +47,9 @@ class Article(models.Model):
         ('AR','Статья  в журнале'),
         ('BK','Книга'),
     )
+    pages = models.CharField(max_length=255,blank=True)
+    volume = models.CharField(max_length=255,blank=True)
+    year = models.CharField(max_length=255,blank=True)
     typ = models.CharField(max_length=2,
                            choices=TYPE_CHOICES,
                            default='AR',
