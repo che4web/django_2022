@@ -1,6 +1,6 @@
 
 from rest_framework import  serializers
-from biblioapp.models import Article,Author,Journal
+from biblioapp.models import Article,Author,Journal,ArticleType
 
 class JournalSerializer(serializers.ModelSerializer):
     id = serializers.CharField()
@@ -23,6 +23,12 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Article
         fields = ['id', 'name', ]
 
+
+class ArticleTypeSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
+    class Meta:
+        model = ArticleType
+        fields = "__all__"
 
 
 class ArticleSerializer(serializers.ModelSerializer):

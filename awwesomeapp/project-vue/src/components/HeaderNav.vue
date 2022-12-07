@@ -14,11 +14,11 @@
                         <router-link class="nav-link "  to="/article/">Статьи</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link "  to="/article/my">Мои статьи</router-link>
+                        <router-link class="nav-link "  to="/article-my">Мои статьи</router-link>
                     </li>
 
                     <li class="nav-item">
-                        <router-link class="nav-link "  to="/article/form">Создать статью</router-link>
+                        <router-link class="nav-link "  to="/article-form">Создать статью</router-link>
                     </li>
                     <li class="nav-item">
                         <a   class="nav-link "  href="/admin" > админка</a>

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import datetime
 from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
-from biblioapp.models import Article,Author,Journal
+from biblioapp.models import Article,Author,Journal,ArticleType
 from biblioapp.forms import SearchForm,ArticleForm
 
 from django.views.generic import DetailView,ListView
@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixi
 from django.contrib.auth.decorators import login_required
 from rest_framework import routers, serializers, viewsets
 from django_filters import FilterSet,CharFilter
-from biblioapp.serializers import AuthorSerializer,JournalSerializer,ArticleSerializer
+from biblioapp.serializers import AuthorSerializer,JournalSerializer,ArticleSerializer,ArticleTypeSerializer
 from rest_framework import filters
 from  django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
@@ -171,10 +171,19 @@ def current_datetime(request):
 class ArticleSetFilter(FilterSet):
     author__name__icontains = CharFilter(field_name="author",lookup_expr="name__icontains")
     name__icontains = CharFilter(field_name="name",lookup_expr="icontains")
+    my_filter = CharFilter(method="get_my_filter")
+    def get_my_filter(self,queryset,name,value):
+        import json
+        print(name,value)
+        d = json.loads(value)
+        print(d)
+        d = {"addition_info__"+k:v for k,v in d.items()}
+        print(d)
+        return queryset.filter(**d)
     class Meta:
         model = Article
         fields= '__all__'
-        exclude = ['img']
+        exclude = ['img','addition_info']
 from rest_framework import pagination
 from rest_framework.response import  Response
 
@@ -252,7 +261,18 @@ class JournalViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+class ArticleTypeSetFilter(FilterSet):
+    class Meta:
+        model = ArticleType
+        fields= '__all__'
+        exclude = ['excentions']
 
+class ArticleTypeViewSet(viewsets.ModelViewSet):
+    queryset = ArticleType.objects.all()
+    model = ArticleType
+    serializer_class = ArticleTypeSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class  = ArticleTypeSetFilter
 
 
 

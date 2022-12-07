@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from asgiref.sync import async_to_sync
+import channels.layers
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -33,6 +37,10 @@ class Journal(models.Model):
     def __str__(self):
         return self.name
 
+class ArticleType(models.Model):
+    name = models.CharField(max_length=255)
+    excentions = models.JSONField(default={},blank=True)
+
 class Article(models.Model):
     name = models.CharField(max_length=255,verbose_name='Заголовок стати')
     img = models.ImageField(blank=True,null=True,verbose_name='Картинка')
@@ -55,8 +63,11 @@ class Article(models.Model):
                            default='AR',
                            verbose_name="Тип публикации"
                            )
+    typ2 = models.ForeignKey(ArticleType,blank=True,null=True,on_delete=models.PROTECT)
     doi = models.CharField(max_length=255,blank=True,null=True)
     referens = models.ManyToManyField('Article',verbose_name="Ссылки",blank=True)
+
+    addition_info = models.JSONField(default={},blank=True)
     def __str__(self):
         return self.get_all_author_name() +self.name
     def save(self,*args,**kwargs):
@@ -83,3 +94,14 @@ class Article(models.Model):
         permissions= (
             ('view_all_article',"Может смотреть все статиь"),
         )
+
+@receiver(post_save,sender=Article)
+def ws_send(sender,instance, created,**kwargs):
+
+        channel_layer = channels.layers.get_channel_layer()
+        if created:
+            message = "Новая статья %d"% instance.id
+        else:
+            message ='изменена статья %d' %instance.id
+        async_to_sync(channel_layer.group_send)('chat_article',{'type':"chat_message",'message':message})
+

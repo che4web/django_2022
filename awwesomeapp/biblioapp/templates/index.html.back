@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content%}
+<h1 > hellp</h1>
+<form>
+    <input id="search" name="search" class="form-control" placeholder="Поиск по названию" value="{{request.GET.search}}"  >
+    <input id="search" name="search" class="form-control" placeholder="Поиск автор" value="{{request.GET.search}}"  >
+</form>
+    <button class="btn btn-primary" onclick="getData()"> поиск</button>
+<table class="table table-hover ">
+    <thead>
+        <tr>
+            <th> id </th>
+            <th> Авторы</th>
+            <th> Название </th>
+            <th> Журнал</th>
+            <th> Год публикации</th>
+            <th> doi </th>
+        </tr>
+    </thead>
+        <tbody id="target_div"></tbody>
+    </table>
+<script>
+    function renderRow(art){
+        return ` <tr> 
+            <td> ${art.id} </td>
+            <td> ${art.get_all_author_name} </td>
+            <td> ${art.name} </td>
+            <td> ${art.journal_name} </td>
+            <td> ${art.date_year} </td>
+            <td> 
+                <a href="https://doi.org/${art.doi}" target="_blank">${art.doi} </a>
+            </td>
+
+        </tr>
+            `
+    }
+    async function getData(){
+        let params ={
+            author__name__icontains:document.getElementById('search').value,
+        }
+
+        let data =  (await axios.get('/api/article/',{params})).data
+        let tmp = ''
+        for (let x of data){
+            tmp += renderRow(x)
+        }
+        document.getElementById("target_div").innerHTML=tmp
+
+    return false
+    }
+    getData()
+
+    let input_element = document.getElementById('search')
+    input_element.oninput=getData
+</script>
+{%endblock%}

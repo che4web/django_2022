@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content%}
+
+ <input id="chat-message-input" type="text" size="100">
+ <button id="chat-message-submit"> отправить  ws</button>
 <script>
     function alertClick(event){
         alert(0);
@@ -12,8 +15,30 @@
         console.log(one,two,three)
 
     }
+
+        let roomName = "article"
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + roomName
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log(data)
+        };
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
 </script>
-<h1 > hellp</h1>
+<h1 >Сипосок статей</h1>
 <form>
     {{form.as_table}}
 

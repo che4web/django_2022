@@ -1,5 +1,5 @@
 from django.contrib import admin
-from biblioapp.models import Article,Author,Journal
+from biblioapp.models import Article,Author,Journal,ArticleType
 # Register your models here.
 
 
@@ -23,4 +23,5 @@ class JournalAdmin(admin.ModelAdmin):
 admin.site.register(Article,ArticleAdmin)
 admin.site.register(Author)
 admin.site.register(Journal,JournalAdmin)
+admin.site.register(ArticleType)
 

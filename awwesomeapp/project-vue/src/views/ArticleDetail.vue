@@ -2,6 +2,10 @@
     <div>
         Описание статьи
         <h2>{{article.name}} {{article.id}}</h2>
+        <h2>Дополнительна информация</h2>
+        <div v-for="val,key in article.addition_info" :key="key">
+            <b>{{key}}</b> {{val}}
+            </div>
     </div>
 </template>
 <script>

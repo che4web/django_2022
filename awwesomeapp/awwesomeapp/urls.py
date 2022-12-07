@@ -26,6 +26,7 @@ from biblioapp.views import (
     ArticleCreate,
     ArticleList,
     ArticleViewSet,
+    ArticleTypeViewSet,
     AuthorViewSet,
     JournalViewSet,
     JournalDetail,
@@ -46,6 +47,7 @@ router = routers.DefaultRouter()
 router.register(r'article', ArticleViewSet)
 router.register(r'author', AuthorViewSet)
 router.register(r'journal', JournalViewSet)
+router.register(r'type', ArticleTypeViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),

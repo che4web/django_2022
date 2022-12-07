@@ -23,6 +23,11 @@
             Журнал
             </div>
             <journal-select v-model="filters.journal"/>
+
+            <div>
+             first_date в add_field
+            </div>
+            <input v-model="filters.my_filter" class="form-control"> 
         </div>
         <div class="col-10">
 <table class="table table-hover ">
